@@ -7,7 +7,7 @@ networks:
             name: kafka-cluster_default
 services:
   zookeeper-1:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 1
@@ -25,7 +25,7 @@ services:
       - "moby:127.0.0.1"
 
   zookeeper-2:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 2
@@ -43,7 +43,7 @@ services:
       - "moby:127.0.0.1"
 
   zookeeper-3:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-zookeeper:latest
     environment:
       ZOOKEEPER_SERVER_ID: 3
@@ -61,7 +61,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-1:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
@@ -86,7 +86,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-2:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
@@ -111,7 +111,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-3:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
@@ -136,7 +136,7 @@ services:
       - "moby:127.0.0.1"
   
   schema-registry:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-schema-registry
     networks:
       - default
@@ -152,7 +152,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-1:19092,kafka-2:29092,kafka-3:39092
 
   kafka-connect:
-    restart_policy: always
+    restart: always
     image: cnfldemos/cp-server-connect-datagen:0.5.3-7.1.0
     networks:
       - default
@@ -204,7 +204,7 @@ services:
         #
         sleep infinity
   ksqldb:
-    restart_policy: always
+    restart: always
     # *-----------------------------*
     # To connect to ksqlDB CLI
     #   docker exec --interactive --tty ksqldb ksql http://localhost:8088
@@ -232,7 +232,7 @@ services:
       KSQL_KSQL_HIDDEN_TOPICS: '^_.*'
 
   control-center:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-enterprise-control-center:latest
     networks:
       - default
@@ -366,7 +366,7 @@ services:
   #     NEO4J_ACCEPT_LICENSE_AGREEMENT: 'yes'
 
   kafkacat:
-    restart_policy: always
+    restart: always
     image: edenhill/kafkacat:1.6.0
     networks:
       - default
@@ -379,7 +379,7 @@ services:
         while [ 1 -eq 1 ];do sleep 60;done
 
   rest-proxy:
-    restart_policy: always
+    restart: always
     image: confluentinc/cp-kafka-rest:7.2.1
     depends_on:
       - kafka-1
