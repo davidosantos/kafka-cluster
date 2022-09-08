@@ -74,6 +74,7 @@ services:
       - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 1
+      KAFKA_BROKER_RACK: 'sao_paulo'
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:22181,zookeeper-2:32181,zookeeper-3:42181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -99,6 +100,7 @@ services:
       - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 2
+      KAFKA_BROKER_RACK: 'sao_paulo'
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:22181,zookeeper-2:32181,zookeeper-3:42181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -124,6 +126,7 @@ services:
       - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 3
+      KAFKA_BROKER_RACK: 'londrina'
       KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:22181,zookeeper-2:32181,zookeeper-3:42181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -209,7 +212,7 @@ services:
     # To connect to ksqlDB CLI
     #   docker exec --interactive --tty ksqldb ksql http://localhost:8088
     # *-----------------------------*
-    image: confluentinc/ksqldb-server:latest
+    image: confluentinc/ksqldb-server:0.210
     networks:
       - default
     ports:
