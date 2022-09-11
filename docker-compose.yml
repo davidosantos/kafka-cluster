@@ -73,3 +73,34 @@ services:
     volumes:
       - ./src:/opt/app/src
       - ./test:/opt/app/test
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:7.1.1-1-ubi8
+    hostname: control-center
+    container_name: control-center
+    networks:
+      - confluent
+    ports:
+      - "9021:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: broker:29092
+      CONTROL_CENTER_KAFKA_CONTROLCENTER_BOOTSTRAP_SERVERS: broker:29092
+      CONTROL_CENTER_KAFKA_PRODUCTION_BOOTSTRAP_SERVERS: broker:29092
+      CONTROL_CENTER_KAFKA_PRODUCTION_CPREST_URL: http://broker:28090
+      CONTROL_CENTER_ZOOKEEPER_CONNECT: zookeeper:2181
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_UI_AUTOUPDATE_ENABLE: "false"
+#      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: "http://connect:8083"
+#      CONTROL_CENTER_KSQL_URL: "http://ksqldb-server:8088"
+#      CONTROL_CENTER_KSQL_ADVERTISED_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_KSQL_ksqldb-class_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_KSQL_ksqldb-class_ADVERTISED_URL: "http://ksqldb-server:8088"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION: 1
+      CONTROL_CENTER_COMMAND_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 1
+      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 1
+      # Amount of heap to use for internal caches. Increase for better throughput
+      CONTROL_CENTER_STREAMS_CACHE_MAX_BYTES_BUFFERING: 100000000
+      CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
