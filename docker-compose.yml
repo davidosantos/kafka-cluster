@@ -1,308 +1,75 @@
-version: "3.5"
+---
+version: '2'
+
 services:
-  zk-1:
-    image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
-    container_name: zk-1
-    hostname: zk-1
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.1.0
+    hostname: zookeeper
+    container_name: zookeeper
     ports:
-      - "12181:12181"
-    volumes:
-      - data-zk-log-1:/var/lib/zookeeper/log
-      - data-zk-data-1:/var/lib/zookeeper/data
-    networks:
-      - confluent
+      - "2181:2181"
     environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 12181
+      ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
 
-  zk-2:
-    image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
-    container_name: zk-2
-    hostname: zk-2
-    ports:
-      - "22181:22181"
-    volumes:
-      - data-zk-log-2:/var/lib/zookeeper/log
-      - data-zk-data-2:/var/lib/zookeeper/data
-    networks:
-      - confluent
-    environment:
-      ZOOKEEPER_SERVER_ID: 2
-      ZOOKEEPER_CLIENT_PORT: 22181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
-
-  zk-3:
-    image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
-    container_name: zk-3
-    hostname: zk-3
-    ports:
-      - "32181:32181"
-    volumes:
-      - data-zk-log-3:/var/lib/zookeeper/log
-      - data-zk-data-3:/var/lib/zookeeper/data
-    networks:
-      - confluent
-    environment:
-      ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_CLIENT_PORT: 32181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
-
-  zk-cc:
-    image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
-    hostname: zk-cc
-    container_name: zk-cc
-    ports:
-      - "52181:52181"
-    volumes:
-      - data-zk-log-cc:/var/lib/zookeeper/log
-      - data-zk-data-cc:/var/lib/zookeeper/data
-    networks:
-      - confluent
-    environment:
-      ZOOKEEPER_SERVER_ID: 5
-      ZOOKEEPER_CLIENT_PORT: 52181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zk-cc:2888:3888
-
-  kafka-1:
-    image: confluentinc/cp-server:7.1.1-1-ubi8
-    container_name: kafka-1
-    hostname: kafka-1
-    ports:
-      - "19092:19092"
-    networks:
-      - confluent
-    volumes:
-      - data-kafka-1:/var/lib/kafka/data
-    environment:
-      KAFKA_BROKER_ID: 101
-      KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
-      KAFKA_LISTENERS: DOCKER://kafka-1:9092,HOST://kafka-1:19092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER://kafka-1:9092,HOST://kafka-1:19092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER:PLAINTEXT,HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
-      # Schema Validation
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      KAFKA_CONFLUENT_HTTP_SERVER_LISTENERS: http://kafka-1:18090
-
-  kafka-2:
-    image: confluentinc/cp-server:7.1.1-1-ubi8
-    container_name: kafka-2
-    hostname: kafka-2
+  broker:
+    image: confluentinc/cp-kafka:7.1.0
+    hostname: broker
+    container_name: broker
+    depends_on:
+      - zookeeper
     ports:
       - "29092:29092"
-    networks:
-      - confluent
-    volumes:
-      - data-kafka-2:/var/lib/kafka/data
     environment:
-      KAFKA_BROKER_ID: 102
-      KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
-      KAFKA_LISTENERS: DOCKER://kafka-2:9092,HOST://kafka-2:29092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER://kafka-2:9092,HOST://kafka-2:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER:PLAINTEXT,HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
-      # Schema Validation
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      KAFKA_CONFLUENT_HTTP_SERVER_LISTENERS: http://kafka-2:28090
-
-  kafka-3:
-    image: confluentinc/cp-server:7.1.1-1-ubi8
-    container_name: kafka-3
-    hostname: kafka-3
-    ports:
-      - "39092:39092"
-    networks:
-      - confluent
-    volumes:
-      - data-kafka-3:/var/lib/kafka/data
-    environment:
-      KAFKA_BROKER_ID: 103
-      KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_DELETE_TOPIC_ENABLE: "true"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
-      KAFKA_LISTENERS: DOCKER://kafka-3:9092,HOST://kafka-3:39092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER://kafka-3:9092,HOST://kafka-3:39092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER:PLAINTEXT,HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
-      # Schema Validation
-      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      KAFKA_CONFLUENT_HTTP_SERVER_LISTENERS: http://kafka-3:38090
-
-  kafka-cc:
-    image: confluentinc/cp-server:7.1.1-1-ubi8
-    hostname: kafka-cc
-    container_name: kafka-cc
-    ports:
-      - "59092:59092"
-    networks:
-      - confluent
-    environment:
-      KAFKA_BROKER_ID: 105
-      KAFKA_ZOOKEEPER_CONNECT: zk-cc:52181
-      KAFKA_LISTENERS: DOCKER://kafka-cc:9092,HOST://kafka-cc:59092
-      KAFKA_ADVERTISED_LISTENERS: DOCKER://kafka-cc:9092,HOST://kafka-cc:59092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER:PLAINTEXT,HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
-      KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
-
-  control-center:
-    image: confluentinc/cp-enterprise-control-center:7.1.1-1-ubi8
-    hostname: control-center
-    container_name: control-center
-    networks:
-      - confluent
-    ports:
-      - "9021:9021"
-    environment:
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: kafka-cc:9092
-      CONTROL_CENTER_KAFKA_CONTROLCENTER_BOOTSTRAP_SERVERS: kafka-cc:9092
-      CONTROL_CENTER_KAFKA_PRODUCTION_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
-      CONTROL_CENTER_KAFKA_PRODUCTION_CPREST_URL: http://kafka-1:18090,http://kafka-2:28090,http://kafka-3:38090
-      CONTROL_CENTER_ZOOKEEPER_CONNECT: zk-1:2181,zk-2:2181,zk-3:2181
-      CONTROL_CENTER_REPLICATION_FACTOR: 1
-      CONTROL_CENTER_UI_AUTOUPDATE_ENABLE: "false"
-      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: "http://connect:8083"
-#      CONTROL_CENTER_KSQL_URL: "http://ksqldb-server:8088"
-#      CONTROL_CENTER_KSQL_ADVERTISED_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_KSQL_ksqldb-class_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_KSQL_ksqldb-class_ADVERTISED_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION: 1
-      CONTROL_CENTER_COMMAND_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 1
-      # Amount of heap to use for internal caches. Increase for better throughput
-      CONTROL_CENTER_STREAMS_CACHE_MAX_BYTES_BUFFERING: 100000000
-      CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.1.1-1-ubi8
+    image: confluentinc/cp-schema-registry:7.1.0
     hostname: schema-registry
     container_name: schema-registry
-    restart: always
+    depends_on:
+      - broker
     ports:
       - "8081:8081"
-    networks:
-      - confluent
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
-      SCHEMA_REGISTRY_LISTENERS: "http://schema-registry:8081"
-      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
-      KAFKA_REST_CUB_KAFKA_TIMEOUT: 120
-      KAFKA_REST_CUB_KAFKA_MIN_BROKERS: 3
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:9092'
 
   ksqldb-server:
-    image: confluentinc/cp-ksqldb-server:7.1.1-1-ubi8
-    restart: always
+    image: confluentinc/ksqldb-server:0.24.0
     hostname: ksqldb-server
     container_name: ksqldb-server
+    depends_on:
+      - broker
+      - schema-registry
     ports:
       - "8088:8088"
-    networks:
-      - confluent
     environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksqldb/log4j-rolling.properties"
-      KSQL_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
+      KSQL_CONFIG_DIR: "/etc/ksqldb"
+      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksqldb/log4j.properties"
+      KSQL_BOOTSTRAP_SERVERS: "broker:9092"
       KSQL_HOST_NAME: ksqldb-server
-      KSQL_APPLICATION_ID: "ksqldb-class"
       KSQL_LISTENERS: "http://0.0.0.0:8088"
-      # Set the buffer cache to 0 so that the KSQL CLI shows all updates to KTables for learning purposes.
-      # The default is 10 MB, which means records in a KTable are compacted before showing output.
-      # Change cache.max.bytes.buffering and commit.interval.ms to tune this behavior.
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
       KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      KSQL_KSQL_CONNECT_URL: "http://connect:8083"
-      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-      KSQL_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
-      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-      KSQL_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
 
-  connect:
-    image: cnfldemos/cp-server-connect-datagen:0.5.3-7.1.0
-    restart: always
-    hostname: connect
-    container_name: connect
-    ports:
-      - "8083:8083"
-    networks:
-      - confluent
+  ksqldb-cli:
+    image: confluentinc/ksqldb-cli:0.24.0
+    container_name: ksqldb-cli
+    depends_on:
+      - broker
+      - ksqldb-server
+    entrypoint: /bin/sh
+    tty: true
     environment:
-      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.1.0.jar
-      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-      CONNECT_PRODUCER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: kafka-1:9092
-      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-      CONNECT_CONSUMER_CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: kafka-1:9092
-      CONNECT_BOOTSTRAP_SERVERS: kafka-1:9092
-      CONNECT_GROUP_ID: "connect"
-      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
-      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
-      CONNECT_STATUS_STORAGE_TOPIC: "connect-statuses"
-      CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
-      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
-      CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
-      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
-      CONNECT_REST_HOST_NAME: "connect"
-      CONNECT_REST_PORT: 8083
-      CONNECT_CUB_KAFKA_TIMEOUT: 120
-
-volumes:
-  data-zk-log-1:
-  data-zk-data-1:
-  data-zk-log-2:
-  data-zk-data-2:
-  data-zk-log-3:
-  data-zk-data-3:
-  data-zk-log-cc:
-  data-zk-data-cc:
-  data-kafka-1:
-  data-kafka-2:
-  data-kafka-3:
-
-networks:
-  confluent:
+      KSQL_CONFIG_DIR: "/etc/ksqldb"
+    volumes:
+      - ./src:/opt/app/src
+      - ./test:/opt/app/test
