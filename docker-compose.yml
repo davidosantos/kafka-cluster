@@ -1,104 +1,134 @@
----
-version: '2'
-
+version: "3.5"
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.1.0
+    image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
     hostname: zookeeper
     container_name: zookeeper
     ports:
       - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  broker:
-    image: confluentinc/cp-kafka:7.1.0
-    hostname: broker
-    container_name: broker
-    depends_on:
-      - zookeeper
-    ports:
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.1.0
-    hostname: schema-registry
-    container_name: schema-registry
-    depends_on:
-      - broker
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:9092'
-
-  ksqldb-server:
-    image: confluentinc/ksqldb-server:0.24.0
-    hostname: ksqldb-server
-    container_name: ksqldb-server
-    depends_on:
-      - broker
-      - schema-registry
-    ports:
-      - "8088:8088"
-    environment:
-      KSQL_CONFIG_DIR: "/etc/ksqldb"
-      KSQL_LOG4J_OPTS: "-Dlog4j.configuration=file:/etc/ksqldb/log4j.properties"
-      KSQL_BOOTSTRAP_SERVERS: "broker:9092"
-      KSQL_HOST_NAME: ksqldb-server
-      KSQL_LISTENERS: "http://0.0.0.0:8088"
-      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
-      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-
-  ksqldb-cli:
-    image: confluentinc/ksqldb-cli:0.24.0
-    container_name: ksqldb-cli
-    depends_on:
-      - broker
-      - ksqldb-server
-    entrypoint: /bin/sh
-    tty: true
-    environment:
-      KSQL_CONFIG_DIR: "/etc/ksqldb"
     volumes:
-      - ./src:/opt/app/src
-      - ./test:/opt/app/test
+      - data-zk-log:/var/lib/zookeeper/log
+      - data-zk-data:/var/lib/zookeeper/data
+    networks:
+      - confluent
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+
+  kafka-1:
+    image: confluentinc/cp-server:7.1.1-1-ubi8
+    hostname: kafka-1
+    container_name: kafka-1
+    networks:
+      - confluent
+    volumes:
+      - data-kafka-1:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 101
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: CLIENT://kafka-1:9092,BROKER://kafka-1:9094,CONTROLLER://kafka-1:9095
+      KAFKA_ADVERTISED_LISTENERS: CLIENT://kafka-1:9092,BROKER://kafka-1:9094,CONTROLLER://kafka-1:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,BROKER:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_LISTENER_NAME_BROKER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_CONTROL_PLANE_LISTENER_NAME: CONTROLLER
+      KAFKA_LISTENER_NAME_CONTROLLER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+
+  kafka-2:
+    image: confluentinc/cp-server:7.1.1-1-ubi8
+    hostname: kafka-2
+    container_name: kafka-2
+    networks:
+      - confluent
+    volumes:
+      - data-kafka-2:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 102
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: CLIENT://kafka-2:9092,BROKER://kafka-2:9094,CONTROLLER://kafka-2:9095
+      KAFKA_ADVERTISED_LISTENERS: CLIENT://kafka-2:9092,BROKER://kafka-2:9094,CONTROLLER://kafka-2:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,BROKER:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_LISTENER_NAME_BROKER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_CONTROL_PLANE_LISTENER_NAME: CONTROLLER
+      KAFKA_LISTENER_NAME_CONTROLLER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+
+  kafka-3:
+    image: confluentinc/cp-server:7.1.1-1-ubi8
+    hostname: kafka-3
+    container_name: kafka-3
+    networks:
+      - confluent
+    volumes:
+      - data-kafka-3:/var/lib/kafka/data
+    environment:
+      KAFKA_BROKER_ID: 103
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: CLIENT://kafka-3:9092,BROKER://kafka-3:9094,CONTROLLER://kafka-3:9095
+      KAFKA_ADVERTISED_LISTENERS: CLIENT://kafka-3:9092,BROKER://kafka-3:9094,CONTROLLER://kafka-3:9095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,BROKER:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_LISTENER_NAME_BROKER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_CONTROL_PLANE_LISTENER_NAME: CONTROLLER
+      KAFKA_LISTENER_NAME_CONTROLLER_PLAIN_SASL_JAAS_CONFIG: |
+        org.apache.kafka.common.security.plain.PlainLoginModule required \
+        username="kafka" \
+        password="kafka-secret" \
+        user_kafka="kafka-secret";
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.1.1-1-ubi8
     hostname: control-center
     container_name: control-center
+    restart: always
+    networks:
+      - confluent
     ports:
       - "9021:9021"
     environment:
-      CONTROL_CENTER_BOOTSTRAP_SERVERS: broker:9092
-      CONTROL_CENTER_KAFKA_CONTROLCENTER_BOOTSTRAP_SERVERS: broker:9092
-      CONTROL_CENTER_KAFKA_PRODUCTION_BOOTSTRAP_SERVERS: broker:9092
-      CONTROL_CENTER_KAFKA_PRODUCTION_CPREST_URL: http://broker:28090
-      CONTROL_CENTER_ZOOKEEPER_CONNECT: zookeeper:2181
-      CONTROL_CENTER_REPLICATION_FACTOR: 1
-      CONTROL_CENTER_UI_AUTOUPDATE_ENABLE: "false"
-#      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: "http://connect:8083"
-#      CONTROL_CENTER_KSQL_URL: "http://ksqldb-server:8088"
-#      CONTROL_CENTER_KSQL_ADVERTISED_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_KSQL_ksqldb-class_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_KSQL_ksqldb-class_ADVERTISED_URL: "http://ksqldb-server:8088"
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_INTERNAL_TOPICS_REPLICATION: 1
-      CONTROL_CENTER_COMMAND_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_METRICS_TOPIC_REPLICATION: 1
-      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 1
-      # Amount of heap to use for internal caches. Increase for better throughput
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: kafka-1:9092,kafka-2:9092,kafka-3:9092
+      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 4
       CONTROL_CENTER_STREAMS_CACHE_MAX_BYTES_BUFFERING: 100000000
-      CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
+      CONTROL_CENTER_REPLICATION_FACTOR: 3
+
+volumes:
+  data-zk-log:
+  data-zk-data:
+  data-kafka-1:
+  data-kafka-2:
+  data-kafka-3:
+
+networks:
+  confluent:
