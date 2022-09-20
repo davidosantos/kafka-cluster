@@ -106,10 +106,11 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-1.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
+#      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+#      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
 
   kafka-2:
     image: confluentinc/cp-server:7.1.1-1-ubi8
@@ -151,10 +152,11 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-2.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
+#      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+#      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
 
   kafka-3:
     image: confluentinc/cp-server:7.1.1-1-ubi8
@@ -196,10 +198,11 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-3.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
+#      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+#      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.1.1-1-ubi8
@@ -245,8 +248,9 @@ services:
       CONTROL_CENTER_REST_SSL_KEY_PASSWORD: confluent
 
       # Schema Registry
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,https://schema-registry-2:28081
-#      CONTROL_CENTER_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+#      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+#      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlCenter:confluent'
       CONTROL_CENTER_SCHEMA_REGISTRY_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
       CONTROL_CENTER_SCHEMA_REGISTRY_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
 
@@ -271,7 +275,6 @@ services:
 
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
 
-#      SCHEMA_REGISTRY_LISTENERS: "http://schema-registry-1:18081"
       SCHEMA_REGISTRY_LISTENERS: "https://schema-registry-1:18085"
 
       SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-1.truststore.pkcs12
@@ -280,10 +283,13 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
 
 #      The default value for authentication.method is "NONE"
+#      SCHEMA_REGISTRY_AUTHENTICATION_METHOD: "BASIC"
+#      SCHEMA_REGISTRY_AUTHENTICATION_ROLES: "admin,developer,user,sr-user"
+#      SCHEMA_REGISTRY_AUTHENTICATION_REALM: SchemaRegistry-Props    
+#      SCHEMA_REGISTRY_OPTS: "-Djava.security.auth.login.config=/etc/schema-registry/secrets/schema-registry-1-jaas.conf"
 
       SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT: 120
       SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS: 3
@@ -310,7 +316,6 @@ services:
 
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
 
-#      SCHEMA_REGISTRY_LISTENERS: "http://schema-registry-2:28081"
       SCHEMA_REGISTRY_LISTENERS: "https://schema-registry-2:28085"
 
       SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-2.truststore.pkcs12
@@ -319,10 +324,13 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
 
 #      The default value for authentication.method is "NONE"
+#      SCHEMA_REGISTRY_AUTHENTICATION_METHOD: "BASIC"
+#      SCHEMA_REGISTRY_AUTHENTICATION_ROLES: "admin,developer,user,sr-user"
+#      SCHEMA_REGISTRY_AUTHENTICATION_REALM: SchemaRegistry-Props    
+#      SCHEMA_REGISTRY_OPTS: "-Djava.security.auth.login.config=/etc/schema-registry/secrets/schema-registry-2-jaas.conf"
 
       SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT: 120
       SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS: 3
@@ -350,10 +358,11 @@ services:
       KAFKA_REST_LISTENERS: https://0.0.0.0:8086
       KAFKA_REST_ADVERTISED_LISTENERS: https://restproxy-external:8086
 
-      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
-#      KAFKA_REST_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,http://schema-registry-2:28085
-#      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
-#      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,http://schema-registry-2:28085
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+#      KAFKA_REST_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+#      KAFKA_REST_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlCenter:confluent'
 
       KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
       KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent

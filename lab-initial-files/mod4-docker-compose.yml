@@ -76,7 +76,7 @@ services:
     hostname: kafka-1
     ports:
       - "19092:19092"
-      - "19093:19093"      
+      - "19093:19093"
     networks:
       - confluent
     volumes:
@@ -91,11 +91,17 @@ services:
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
       #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
-      KAFKA_LISTENERS: SSL://0.0.0.0:19093,PLAINTEXT://0.0.0.0:9092,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1-external:19093,PLAINTEXT://kafka-1:9092,SSL-INT://kafka-1:9093,SASL-INT://kafka-1:9095,BROKER://kafka-1:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,PLAINTEXT:PLAINTEXT,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
+      KAFKA_LISTENERS: SSL://0.0.0.0:19093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1-external:19093,SSL-INT://kafka-1:9093,SASL-INT://kafka-1:9095,BROKER://kafka-1:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka-1-jaas.conf
+#      KAFKA_LISTENER_NAME_SASL-INT_PLAIN_SASL_JAAS_CONFIG: |
+#                  org.apache.kafka.common.security.plain.PlainLoginModule required \
+#                  username="kafkabroker" \
+#                  password="kafkabroker-secret" \
+#                  user_schema-registry-1="schema-registry-1-secret" \
+#                  user_schema-registry-2="schema-registry-2-secret";
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-1.keystore.pkcs12
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-1_keystore_creds
@@ -106,8 +112,9 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-1.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
 
@@ -121,7 +128,7 @@ services:
     hostname: kafka-2
     ports:
       - "29092:29092"
-      - "29093:29093"  
+      - "29093:29093"
     networks:
       - confluent
     volumes:
@@ -136,11 +143,17 @@ services:
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
       #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
-      KAFKA_LISTENERS: SSL://0.0.0.0:29093,PLAINTEXT://0.0.0.0:9092,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2-external:29093,PLAINTEXT://kafka-2:9092,SSL-INT://kafka-2:9093,SASL-INT://kafka-2:9095,BROKER://kafka-2:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,PLAINTEXT:PLAINTEXT,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
+      KAFKA_LISTENERS: SSL://0.0.0.0:29093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2-external:29093,SSL-INT://kafka-2:9093,SASL-INT://kafka-2:9095,BROKER://kafka-2:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka-2-jaas.conf
+#      KAFKA_LISTENER_NAME_SASL-INT_PLAIN_SASL_JAAS_CONFIG: |
+#                  org.apache.kafka.common.security.plain.PlainLoginModule required \
+#                  username="kafkabroker" \
+#                  password="kafkabroker-secret" \
+#                  user_schema-registry-1="schema-registry-1-secret" \
+#                  user_schema-registry-2="schema-registry-2-secret";
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-2.keystore.pkcs12
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-2_keystore_creds
@@ -151,8 +164,9 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-2.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
 
@@ -166,7 +180,7 @@ services:
     hostname: kafka-3
     ports:
       - "39092:39092"
-      - "39093:39093"  
+      - "39093:39093"
     networks:
       - confluent
     volumes:
@@ -181,11 +195,17 @@ services:
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
       #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
-      KAFKA_LISTENERS: SSL://0.0.0.0:39093,PLAINTEXT://0.0.0.0:9092,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
-      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3-external:39093,PLAINTEXT://kafka-3:9092,SSL-INT://kafka-3:9093,SASL-INT://kafka-3:9095,BROKER://kafka-3:9094
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,PLAINTEXT:PLAINTEXT,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
+      KAFKA_LISTENERS: SSL://0.0.0.0:39093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3-external:39093,SSL-INT://kafka-3:9093,SASL-INT://kafka-3:9095,BROKER://kafka-3:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_OPTS: -Djava.security.auth.login.config=/etc/kafka/secrets/kafka-3-jaas.conf
+#      KAFKA_LISTENER_NAME_SASL-INT_PLAIN_SASL_JAAS_CONFIG: |
+#                  org.apache.kafka.common.security.plain.PlainLoginModule required \
+#                  username="kafkabroker" \
+#                  password="kafkabroker-secret" \
+#                  user_schema-registry-1="schema-registry-1-secret" \
+#                  user_schema-registry-2="schema-registry-2-secret";
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-3.keystore.pkcs12
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-3_keystore_creds
@@ -196,8 +216,9 @@ services:
       KAFKA_SSL_CLIENT_AUTH: "required"
 
       # Schema Validation
-#      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      KAFKA_CONFLUENT_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_CONFLUENT_BASIC_AUTH_USER_INFO: 'superUser:confluent'
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-3.truststore.pkcs12
       KAFKA_CONFLUENT_SSL_TRUSTSTORE_PASSWORD: confluent
 
@@ -236,7 +257,7 @@ services:
       CONTROL_CENTER_STREAMS_SSL_KEYSTORE_PASSWORD: confluent
       CONTROL_CENTER_STREAMS_SSL_KEY_PASSWORD: confluent
 
-      # HTTP and HTTPS to Control Center UI 
+      # HTTP and HTTPS to Control Center UI
       CONTROL_CENTER_REST_LISTENERS: https://0.0.0.0:9022
       CONTROL_CENTER_REST_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
       CONTROL_CENTER_REST_SSL_TRUSTSTORE_PASSWORD: confluent
@@ -245,8 +266,9 @@ services:
       CONTROL_CENTER_REST_SSL_KEY_PASSWORD: confluent
 
       # Schema Registry
-      CONTROL_CENTER_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,https://schema-registry-2:28081
-#      CONTROL_CENTER_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,https://schema-registry-2:28085
+      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      CONTROL_CENTER_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlCenter:confluent'
       CONTROL_CENTER_SCHEMA_REGISTRY_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
       CONTROL_CENTER_SCHEMA_REGISTRY_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
 
@@ -254,7 +276,7 @@ services:
     image: confluentinc/cp-schema-registry:7.1.1-1-ubi8
     hostname: schema-registry-1
     container_name: schema-registry-1
-    restart: always
+#    restart: always
     depends_on:
       - kafka-1
       - kafka-2
@@ -265,13 +287,27 @@ services:
     networks:
       - confluent
     volumes:
+      - /home/training/sr/scripts/run:/etc/confluent/docker/run
       - /home/training/sr/schema-registry-1-creds:/etc/schema-registry/secrets
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-1
 
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9093,kafka-3:9093"
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SSL
+#      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9095,kafka-2:9095,kafka-3:9095"
+#      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
+#      SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: PLAIN
+#      SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: |
+#              org.apache.kafka.common.security.plain.PlainLoginModule required \
+#              username="schema-registry-1" \
+#              password="bad-password";
+#              password="schema-registry-1-secret";
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-1.truststore.pkcs12
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-1.keystore.pkcs12
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_LISTENERS: "http://schema-registry-1:18081"
       SCHEMA_REGISTRY_LISTENERS: "https://schema-registry-1:18085"
 
       SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-1.truststore.pkcs12
@@ -280,20 +316,21 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
-
-#      The default value for authentication.method is "NONE"
+      
+      SCHEMA_REGISTRY_AUTHENTICATION_METHOD: "BASIC"
+      SCHEMA_REGISTRY_AUTHENTICATION_ROLES: "admin,developer,user,sr-user"
+      SCHEMA_REGISTRY_AUTHENTICATION_REALM: SchemaRegistry-Props    
+      SCHEMA_REGISTRY_OPTS: "-Djava.security.auth.login.config=/etc/schema-registry/secrets/schema-registry-1-jaas.conf"
 
       SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT: 120
       SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS: 3
-
 
   schema-registry-2:
     image: confluentinc/cp-schema-registry:7.1.1-1-ubi8
     hostname: schema-registry-2
     container_name: schema-registry-2
-    restart: always
+#    restart: always
     depends_on:
       - kafka-1
       - kafka-2
@@ -304,13 +341,27 @@ services:
     networks:
       - confluent
     volumes:
+      - /home/training/sr/scripts/run:/etc/confluent/docker/run
       - /home/training/sr/schema-registry-2-creds:/etc/schema-registry/secrets
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-2
 
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9093,kafka-3:9093"
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SSL
+#      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka-1:9095,kafka-2:9095,kafka-3:9095"
+#      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: SASL_SSL
+#      SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: PLAIN
+#      SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: |
+#              org.apache.kafka.common.security.plain.PlainLoginModule required \
+#              username="schema-registry-2" \
+#              password="bad-password";
+#              password="schema-registry-2-secret";
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-2.truststore.pkcs12
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-2.keystore.pkcs12
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_PASSWORD: confluent
+      SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_LISTENERS: "http://schema-registry-2:28081"
       SCHEMA_REGISTRY_LISTENERS: "https://schema-registry-2:28085"
 
       SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-2.truststore.pkcs12
@@ -319,10 +370,12 @@ services:
       SCHEMA_REGISTRY_SSL_KEYSTORE_PASSWORD: confluent
       SCHEMA_REGISTRY_SSL_KEY_PASSWORD: confluent
 
-#      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
       SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "https"
-
-#      The default value for authentication.method is "NONE"
+      
+      SCHEMA_REGISTRY_AUTHENTICATION_METHOD: "BASIC"
+      SCHEMA_REGISTRY_AUTHENTICATION_ROLES: "admin,developer,user,sr-user"
+      SCHEMA_REGISTRY_AUTHENTICATION_REALM: SchemaRegistry-Props    
+      SCHEMA_REGISTRY_OPTS: "-Djava.security.auth.login.config=/etc/schema-registry/secrets/schema-registry-2-jaas.conf"
 
       SCHEMA_REGISTRY_CUB_KAFKA_TIMEOUT: 120
       SCHEMA_REGISTRY_CUB_KAFKA_MIN_BROKERS: 3
@@ -350,10 +403,11 @@ services:
       KAFKA_REST_LISTENERS: https://0.0.0.0:8086
       KAFKA_REST_ADVERTISED_LISTENERS: https://restproxy-external:8086
 
-      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry-1:18081,http://schema-registry-2:28081
-#      KAFKA_REST_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,http://schema-registry-2:28085
-#      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
-#      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
+      KAFKA_REST_SCHEMA_REGISTRY_URL: https://schema-registry-1:18085,http://schema-registry-2:28085
+      KAFKA_REST_SCHEMA_REGISTRY_BASIC_AUTH_CREDENTIALS_SOURCE: USER_INFO
+      KAFKA_REST_SCHEMA_REGISTRY_BASIC_AUTH_USER_INFO: 'controlCenter:confluent'
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
+      KAFKA_REST_SCHEMA_REGISTRY_SSL_TRUSTSTORE_PASSWORD: confluent
 
       KAFKA_REST_SSL_TRUSTSTORE_LOCATION: /etc/restproxy/secrets/kafka.restproxy.truststore.pkcs12
       KAFKA_REST_SSL_TRUSTSTORE_PASSWORD: confluent
