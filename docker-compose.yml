@@ -9,7 +9,7 @@ services:
     volumes:
       - data-zk-log-1:/var/lib/zookeeper/log
       - data-zk-data-1:/var/lib/zookeeper/data
-      - /home/training/sr/zk-creds:/etc/kafka/secrets
+      - ./zk-creds:/etc/kafka/secrets
     networks:
       - confluent
     environment:
@@ -31,7 +31,7 @@ services:
     volumes:
       - data-zk-log-2:/var/lib/zookeeper/log
       - data-zk-data-2:/var/lib/zookeeper/data
-      - /home/training/sr/zk-creds:/etc/kafka/secrets
+      - ./zk-creds:/etc/kafka/secrets
     networks:
       - confluent
     environment:
@@ -53,7 +53,7 @@ services:
     volumes:
       - data-zk-log-3:/var/lib/zookeeper/log
       - data-zk-data-3:/var/lib/zookeeper/data
-      - /home/training/sr/zk-creds:/etc/kafka/secrets
+      - ./zk-creds:/etc/kafka/secrets
     networks:
       - confluent
     environment:
@@ -81,7 +81,7 @@ services:
       - confluent
     volumes:
       - data-kafka-1:/var/lib/kafka/data
-      - /home/training/sr/kafka-1-creds:/etc/kafka/secrets
+      - ./kafka-1-creds:/etc/kafka/secrets
     environment:
       KAFKA_BROKER_ID: 101
       KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
@@ -139,7 +139,7 @@ services:
       - confluent
     volumes:
       - data-kafka-2:/var/lib/kafka/data
-      - /home/training/sr/kafka-2-creds:/etc/kafka/secrets
+      - ./kafka-2-creds:/etc/kafka/secrets
     environment:
       KAFKA_BROKER_ID: 102
       KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
@@ -191,7 +191,7 @@ services:
       - confluent
     volumes:
       - data-kafka-3:/var/lib/kafka/data
-      - /home/training/sr/kafka-3-creds:/etc/kafka/secrets
+      - ./kafka-3-creds:/etc/kafka/secrets
     environment:
       KAFKA_BROKER_ID: 103
       KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
@@ -241,7 +241,7 @@ services:
     networks:
       - confluent
     volumes:
-      - /home/training/sr/control-center-creds:/etc/kafka/secrets
+      - ./control-center-creds:/etc/kafka/secrets
     ports:
       - "9022:9022"
     environment:
@@ -293,8 +293,8 @@ services:
     networks:
       - confluent
     volumes:
-      - /home/training/sr/scripts/run:/etc/confluent/docker/run
-      - /home/training/sr/schema-registry-1-creds:/etc/schema-registry/secrets
+      - ./scripts/run:/etc/confluent/docker/run
+      - ./schema-registry-1-creds:/etc/schema-registry/secrets
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-1
 
@@ -347,8 +347,8 @@ services:
     networks:
       - confluent
     volumes:
-      - /home/training/sr/scripts/run:/etc/confluent/docker/run
-      - /home/training/sr/schema-registry-2-creds:/etc/schema-registry/secrets
+      - ./scripts/run:/etc/confluent/docker/run
+      - ./schema-registry-2-creds:/etc/schema-registry/secrets
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry-2
 
@@ -397,7 +397,7 @@ services:
       - schema-registry-1
       - schema-registry-2
     volumes:
-      - /home/training/sr/restproxy-creds:/etc/restproxy/secrets
+      - ./restproxy-creds:/etc/restproxy/secrets
     ports:
       - 8086:8086
     networks:
