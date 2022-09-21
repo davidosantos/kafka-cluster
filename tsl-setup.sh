@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd /home/training/sr
-
 # Create Certification Authority  (CA) key & certificate
 openssl req -new -nodes \
    -x509 \
