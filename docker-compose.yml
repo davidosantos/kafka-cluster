@@ -89,8 +89,8 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
       KAFKA_LISTENERS: SSL://0.0.0.0:19093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1-external:19093,SSL-INT://kafka-1:9093,SASL-INT://kafka-1:9095,BROKER://kafka-1:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
@@ -147,8 +147,8 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
       KAFKA_LISTENERS: SSL://0.0.0.0:29093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2-external:29093,SSL-INT://kafka-2:9093,SASL-INT://kafka-2:9095,BROKER://kafka-2:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
@@ -199,8 +199,8 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
-      #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
       KAFKA_LISTENERS: SSL://0.0.0.0:39093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3-external:39093,SSL-INT://kafka-3:9093,SASL-INT://kafka-3:9095,BROKER://kafka-3:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,SSL-INT:SSL,SASL-INT:SASL_SSL,BROKER:SSL
@@ -281,7 +281,7 @@ services:
     image: confluentinc/cp-schema-registry:latest
     hostname: schema-registry-1
     container_name: schema-registry-1
-#    restart: always
+    restart: always
     depends_on:
       - kafka-1
       - kafka-2
@@ -334,7 +334,7 @@ services:
     image: confluentinc/cp-schema-registry:latest
     hostname: schema-registry-2
     container_name: schema-registry-2
-#    restart: always
+    restart: always
     depends_on:
       - kafka-1
       - kafka-2
