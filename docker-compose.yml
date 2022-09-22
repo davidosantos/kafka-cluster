@@ -254,7 +254,6 @@ services:
       # Amount of heap to use for internal caches. Increase for better throughput
       CONTROL_CENTER_STREAMS_CACHE_MAX_BYTES_BUFFERING: 100000000
       CONTROL_CENTER_STREAMS_CONSUMER_REQUEST_TIMEOUT_MS: "960032"
-      CONTROL_CENTER_STREAMS_NUM_STREAM_THREADS: 1
 
       CONTROL_CENTER_STREAMS_SECURITY_PROTOCOL: SSL
       CONTROL_CENTER_STREAMS_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
@@ -306,7 +305,6 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: |
               org.apache.kafka.common.security.plain.PlainLoginModule required \
               username="schema-registry-1" \
-              password="bad-password";
               password="schema-registry-1-secret";
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION: /etc/schema-registry/secrets/kafka.schema-registry-1.truststore.pkcs12
       SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD: confluent
