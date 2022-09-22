@@ -82,7 +82,6 @@ services:
     volumes:
       - data-kafka-1:/var/lib/kafka/data
       - ./kafka-1-creds:/etc/kafka/secrets
-      - ./control-center-creds:/etc/kafka/secrets
     environment:
       KAFKA_BROKER_ID: 101
       KAFKA_ZOOKEEPER_CONNECT: zk-1:12181,zk-2:22181,zk-3:32181
@@ -94,11 +93,11 @@ services:
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9093,kafka-3:9093"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SSL
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.keystore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD: confluent
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-1.truststore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD:  kafka-1_truststore_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-1.keystore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD:  kafka-1_sslkey_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD:  kafka-1_sslkey_creds
 
       KAFKA_LISTENERS: SSL://0.0.0.0:19093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-1-external:19093,SSL-INT://kafka-1:9093,SASL-INT://kafka-1:9095,BROKER://kafka-1:9094
@@ -161,11 +160,11 @@ services:
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9093,kafka-3:9093"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SSL
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.keystore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD: confluent
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-2.truststore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD:  kafka-1_truststore_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-2.keystore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD:  kafka-2_sslkey_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD:  kafka-2_sslkey_creds
 
       KAFKA_LISTENERS: SSL://0.0.0.0:29093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-2-external:29093,SSL-INT://kafka-2:9093,SASL-INT://kafka-2:9095,BROKER://kafka-2:9094
@@ -222,11 +221,11 @@ services:
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9093,kafka-2:9093,kafka-3:9093"
       CONFLUENT_METRICS_REPORTER_SECURITY_PROTOCOL: SSL
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.truststore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.control-center.keystore.pkcs12
-      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD: confluent
-      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD: confluent
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-3.truststore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_TRUSTSTORE_PASSWORD:  kafka-1_truststore_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka.kafka-3.keystore.pkcs12
+      CONFLUENT_METRICS_REPORTER_SSL_KEYSTORE_PASSWORD:  kafka-3_sslkey_creds
+      CONFLUENT_METRICS_REPORTER_SSL_KEY_PASSWORD:  kafka-3_sslkey_creds
 
       KAFKA_LISTENERS: SSL://0.0.0.0:39093,SSL-INT://0.0.0.0:9093,SASL-INT://0.0.0.0:9095,BROKER://0.0.0.0:9094
       KAFKA_ADVERTISED_LISTENERS: SSL://kafka-3-external:39093,SSL-INT://kafka-3:9093,SASL-INT://kafka-3:9095,BROKER://kafka-3:9094
