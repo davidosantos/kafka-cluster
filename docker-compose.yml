@@ -76,13 +76,13 @@ services:
       - ZOOKEEPER_SYNC_LIMIT=2
       - ZOOKEEPER_SERVERS=zk-cc:2888:3888
 
-zoonavigator:
-  image: elkozmon/zoonavigator:latest
-  ports:
-    - "8000:8000"
-  environment:
-    HTTP_PORT: 8000
-    AUTO_CONNECT_CONNECTION_STRING: zk-1:12181
+  zoonavigator:
+    image: elkozmon/zoonavigator:latest
+    ports:
+      - "8000:8000"
+    environment:
+      HTTP_PORT: 8000
+      AUTO_CONNECT_CONNECTION_STRING: zk-1:12181
 
   kafka-1:
     image: confluentinc/cp-server:7.1.1-1-ubi8
