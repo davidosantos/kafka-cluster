@@ -79,9 +79,9 @@ services:
   zoonavigator:
     image: elkozmon/zoonavigator:latest
     ports:
-      - "8000:8000"
+      - "8888:8888"
     environment:
-      HTTP_PORT: 8000
+      HTTP_PORT: 8888
       AUTO_CONNECT_CONNECTION_STRING: zk-1:12181
 
   kafka-1:
