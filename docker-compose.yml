@@ -6,6 +6,7 @@ services:
     container_name: zk-1
     ports:
       - "12181:12181"
+      - "39991:39991"
     volumes:
       - data-zk-log-1:/var/lib/zookeeper/log
       - data-zk-data-1:/var/lib/zookeeper/data
@@ -18,6 +19,7 @@ services:
       - ZOOKEEPER_INIT_LIMIT=5
       - ZOOKEEPER_SYNC_LIMIT=2
       - ZOOKEEPER_SERVERS=zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
+      - KAFKA_JMX_PORT: 39991
   
   zk-2:
     image: confluentinc/cp-zookeeper:7.1.1-1-ubi8
@@ -93,6 +95,7 @@ services:
     ports:
       - "18082:18082"
       - "19092:19092"
+      - "39999:39999"
     networks:
       - confluent
     volumes:
@@ -111,6 +114,7 @@ services:
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
       KAFKA_CONFLUENT_BALANCER_ENABLE: "false"
+      KAFKA_JMX_PORT: 39999
 
   kafka-2:
     image: confluentinc/cp-server:7.1.1-1-ubi8
@@ -188,6 +192,7 @@ services:
       KAFKA_LOG_RETENTION_BYTES: 536870912
       KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-cc:9092"
+
 
   kafka-cc:
     image: confluentinc/cp-server:7.1.1-1-ubi8
