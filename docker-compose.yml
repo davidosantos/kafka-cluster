@@ -84,7 +84,7 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_PARTITIONS: 6
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
       CONFLUENT_METRICS_REPORTER_PUBLISH_MS: 1000
-      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=0.0.0.0 -Dcom.sun.management.jmxremote.rmi.port=39999"
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.rmi.port=39999"
       KAFKA_JMX_PORT: 39999
     extra_hosts:
       - "moby:127.0.0.1"
