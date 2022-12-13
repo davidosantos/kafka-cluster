@@ -98,7 +98,7 @@ services:
       - default
     ports:
       - 29092:29092
-      - "7071:7071"
+      - "7072:7072"
     container_name: kafka-2
     depends_on:
       - zookeeper-1
@@ -126,7 +126,7 @@ services:
       - default
     ports:
       - 39092:39092
-      - "7071:7071"
+      - "7073:7073"
     container_name: kafka-3
     depends_on:
       - zookeeper-1
