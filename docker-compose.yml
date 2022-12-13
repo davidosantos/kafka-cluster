@@ -62,12 +62,12 @@ services:
 
   kafka-1:
     restart: always
-    image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
     ports:
       - 19092:19092
       - 39999:39999
+      - "7071:7071"
     container_name: kafka-1
     depends_on:
       - zookeeper-1
@@ -86,16 +86,17 @@ services:
       CONFLUENT_METRICS_REPORTER_PUBLISH_MS: 1000
       KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.rmi.port=39999"
       KAFKA_JMX_PORT: 39999
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
     extra_hosts:
       - "moby:127.0.0.1"
 
   kafka-2:
     restart: always
-    image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
     ports:
       - 29092:29092
+      - "7071:7071"
     container_name: kafka-2
     depends_on:
       - zookeeper-1
@@ -112,16 +113,17 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_PARTITIONS: 6
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
       CONFLUENT_METRICS_REPORTER_PUBLISH_MS: 1000
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
     extra_hosts:
       - "moby:127.0.0.1"
 
   kafka-3:
     restart: always
-    image: confluentinc/cp-enterprise-kafka:5.4.9
     networks:
       - default
     ports:
       - 39092:39092
+      - "7071:7071"
     container_name: kafka-3
     depends_on:
       - zookeeper-1
@@ -138,9 +140,17 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_PARTITIONS: 6
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 3
       CONFLUENT_METRICS_REPORTER_PUBLISH_MS: 1000
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
     extra_hosts:
       - "moby:127.0.0.1"
   
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090/tcp
+    volumes:
+      - ./mount/prometheus:/etc/prometheus
+
   schema-registry:
     restart: always
     image: confluentinc/cp-schema-registry
