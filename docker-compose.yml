@@ -61,6 +61,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-1:
+    build: .
     restart: always
     networks:
       - default
@@ -91,6 +92,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-2:
+    build: .
     restart: always
     networks:
       - default
@@ -118,6 +120,7 @@ services:
       - "moby:127.0.0.1"
 
   kafka-3:
+    build: .
     restart: always
     networks:
       - default
